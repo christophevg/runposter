@@ -25,15 +25,15 @@ In the end, I intend to print the poster on an A0 format. Therefore, I selected 
 
 Given an angle $\theta$ and a spiralling factor $a$, the cartesian positions are defined as:
 
-$$
-x = a\ \theta\ cos(\theta)\\\\
+```math
+x = a\ \theta\ cos(\theta)\\
 y = a\ \theta\ sin(\theta)
-$$
+```
 
 Credits to [Cye Waldman](https://math.stackexchange.com/users/424641/cye-waldman) for his answer on [Math StackExchange](https://math.stackexchange.com/a/2216736) that explains how, given a fixed in-between distance $\Delta s$, we can compute the next $\theta_{n} = \theta_{n-1} + \Delta \theta$ with
 
-$$
+```math
 \Delta \theta = \frac{\Delta s}{\sqrt{1+\theta_{n-1}^2}}
-$$
+```
 
 ![spiraling canvas](assets/canvas.20251025.svg)
