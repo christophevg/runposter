@@ -1,10 +1,10 @@
 # Run Poster
 
-After a hiatus of several years, I finally was able to attend classes again at our art school and started the course [graphic design and illustrations](https://www.heist-op-den-berg.be/grafisch-ontwerp-en-illustratie). One of the year-projects consisted in designing a poster depicting statistical information regarding a topic of our choice. I picked my Strava statistics ;-)
+After a long break of several years, I finally returned to our art school and enrolled in the course [graphic design and illustrations](https://www.heist-op-den-berg.be/grafisch-ontwerp-en-illustratie). One of the year-projects required me to design a poster that presented statistical information related to a topic of my choice. I decided to use my Strava statistics for this project.
 
-I could have chosen to do this manually, yet, I saw a great opportunity to combine it with some computer graphics and math to come up with a nice visualization of several of my statistics.
+While I could have manually created the poster, I saw an opportunity to integrate computer graphics and math to produce a visually appealing visualization of several of my statistics.
 
-This repository and README are kind of a journal in my exploration over the course of this year, starting with downloading my stats from Strava, to setting up the canvas, choosing SVG as a format to exploring some uncharted math territory.
+This repository and README document my journey throughout the year, beginning with downloading my statistics from Strava, setting up the canvas, and exploring uncharted mathematical concepts, using SVG as a format.
 
 ## Minimal Survival Commands
 
@@ -21,16 +21,16 @@ This will produce a poster called `canvas.svg` based on this years activities.
 
 ### October 25: Spiraling Circles
 
-In the end I want to print the poster on an A0 format, so I chose a canvas size of `width=841, height=1189` and started working on my first design, consisting of a circular representation of a run, arranging runs along an [Archimedean Spiral](https://en.wikipedia.org/wiki/Archimedean_spiral), using fixed distances between the consecutive circles.
+In the end, I intend to print the poster on an A0 format. Therefore, I selected a canvas size of `width=841, height=1189` and started working on my initial design. This design features a circular representation of a run, with the runs arranged along an [Archimedean spiral](https://en.wikipedia.org/wiki/Archimedean_spiral). The design also implements fixed distances between the consecutive circles.
 
 Given an angle $\theta$ and a spiralling factor $a$, the cartesian positions are defined as:
 
 $$
-x = a \theta cos(\theta)
-y = a \theta sin(\theta)
+x = a\ \theta\ cos(\theta)\\
+y = a\ \theta\ sin(\theta)
 $$
 
-Given a fixed in between distance $\Delta s$, we can compute the next $\theta$ using:
+Credits to [Cye Waldman](https://math.stackexchange.com/users/424641/cye-waldman) for his insightful answer on [Math StackExchange](https://math.stackexchange.com/a/2216736) that explains how, given a fixed in-between distance $\Delta s$, we can compute the next $\theta$.
 
 $$
 \Delta \theta = \frac{\Delta s}{\sqrt{1+\theta^2}}
