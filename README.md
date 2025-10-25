@@ -26,7 +26,9 @@ In the end, I intend to print the poster on an A0 format. Therefore, I selected 
 Given an angle $\theta$ and a spiralling factor $a$, the cartesian positions are defined as:
 
 ```math
-x = a\ \theta\ cos(\theta)\\
+x = a\ \theta\ cos(\theta)
+```
+```math
 y = a\ \theta\ sin(\theta)
 ```
 
