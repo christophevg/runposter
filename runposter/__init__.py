@@ -1,23 +1,29 @@
 __version__ = "0.0.1"
 
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Dict
 
 from datetime import datetime
 
 import drawsvg as draw
 
-class Canvas:
-  def __init__(self, shape, layout, width=841, height=1189):
-    self.shape      = shape
-    self.layout     = layout
-    self.width      = width
-    self.height     = height
-    self.canvas     = draw.Drawing(self.width, self.height, origin="center")
-    self.activities = []
+import logging
+logger = logging.getLogger()
 
-  def render(self):
-    for activity, pos in zip(self.activities, self.layout):
+class Canvas:
+  def __init__(self, shape, layout, source, width=841, height=1189):
+    self.shape  = shape
+    self.layout = layout
+    self.source = source
+    self.width  = width
+    self.height = height
+    self.canvas = draw.Drawing(self.width, self.height, origin="center")
+
+  def render(self, df):
+
+    for activity, pos in zip(df.iterrows(), self.layout):
+      _, series = activity
+      activity = self.source.create(series, df)
       self.canvas.append(
         self.shape.render(activity).at(pos)
       )
@@ -25,27 +31,6 @@ class Canvas:
 
   def __str__(self):
     return self.canvas.as_svg()
-
-@dataclass
-class Activity:
-  # bare minimum
-  when              : datetime
-  elapsed_time      : int
-  distance          : float
-  # optional
-  calories          : Union[int,   None] = field(default=None)
-  moving_time       : Union[int,   None] = field(default=None)
-  max_heart_rate    : Union[int,   None] = field(default=None)
-  avg_heart_rate    : Union[int,   None] = field(default=None)
-  max_speed         : Union[float, None] = field(default=None)
-  avg_speed         : Union[float, None] = field(default=None)
-  avg_elapsed_speed : Union[float, None] = field(default=None)
-  elevation_gain    : Union[float, None] = field(default=None)
-  elevation_loss    : Union[float, None] = field(default=None)
-  elevation_low     : Union[float, None] = field(default=None)
-  elevation_high    : Union[float, None] = field(default=None)
-  max_cadence       : Union[int,   None] = field(default=None)
-  avg_cadence       : Union[int,   None] = field(default=None)
 
 class Shape:
   def __init__(self):
@@ -71,3 +56,50 @@ class Shape:
 class Layout:
   def __init__(self, circumradius):
     self.circumradius = circumradius
+
+class Statistic:
+  def __init__(self, name, value, df, mapping):
+    self.name    = name
+    self.value   = value
+    self.df      = df
+    self.mapping = mapping
+
+  @property
+  def min(self):
+    if self.mapping.min is not None:
+      return self.mapping.min
+    return self.df[self.name].min()
+
+  @property
+  def max(self):
+    if self.mapping.max is not None:
+      return self.mapping.max
+    return self.df[self.name].max()
+
+  @property
+  def pct(self):
+    p = (self.value - self.min) / (self.max - self.min)
+    logger.debug(f"{self.name}: {self.min} .. {self.value} .. {self.max} = {p}")
+    return p
+
+@dataclass
+class Mapping:
+  name : str
+  max  : Union[int,float,None] = None
+  min  : Union[int,float,None] = 0
+
+class ActivityFactory:
+  mapping : Dict[str,Mapping] = {}
+
+  @classmethod
+  def create(cls, series, df):
+    return {
+      mapping.name : Statistic(name, series.get(name), df, mapping)
+      for name, mapping in cls.mapping.items()
+    }
+
+  @classmethod
+  def props(cls):
+    return {
+      mapping.name : name for name, mapping in cls.mapping.items()
+    }

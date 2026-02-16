@@ -12,14 +12,24 @@ Want to run this yourself on your own Strava data? First [download your personal
 
 ```console
 % pip install requirements.txt
-% python -m runposter strava/activities.csv > canvas.svg
+% python -m runposter render strava/activities.csv > canvas.svg
 ```
 
 This will produce a poster called `canvas.svg` based on this years activities.
 
 ## My Journal
 
-### October 25: Spiraling Circles
+### February 16, 2026: Circles Consisting of Arcs
+
+For every activity, I want to represent one of its recorded statistics as an arc, layering them on multiple adjacent distances, next to each other.
+
+The first set of statistics I compiled was: `[ "distance", "avg_speed", "avg_heart_rate" ]`. The length of each arc represents a percentage with respect to the minimum and maximum values for that statistic.
+
+![spiraling canvas](assets/canvas.20260216.svg)
+
+💡 Can you find my first marathon, knowing that `distance` was blue?
+
+### October 25, 2025: Spiraling Circles
 
 In the end, I intend to print the poster on an A0 format. Therefore, I selected a canvas size of `width=841, height=1189` and started working on my initial design. This design features a circular representation of a run, with the runs arranged along an [Archimedean spiral](https://en.wikipedia.org/wiki/Archimedean_spiral). The design also implements fixed distances between the consecutive circles.
 

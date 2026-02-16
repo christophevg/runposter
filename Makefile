@@ -6,7 +6,7 @@ all: html/canvas.svg
 today: ${CANVAS_TODAY}
 
 %.svg:
-	python -m runposter strava/activities.csv ${YEAR} > $@
+	python -m runposter render strava/activities.csv ${YEAR} > $@
 
 html/canvas.svg: .FORCE
 ${CANVAS_TODAY}: .FORCE
