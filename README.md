@@ -19,13 +19,29 @@ This will produce a poster called `canvas.svg` based on this years activities.
 
 ## My Journal
 
+### February 21, 2026: More Arcs
+
+Played with segments today.
+
+![segments](assets/canvas.20260221-1.svg)
+
+I also downloaded my entire Strave archive for 2025, which now also includes my Antwerp marathon.
+
+![segments](assets/canvas.20260221.svg)
+
+### February 20, 2026: More Arcs
+
+Added a few more statistics: `[ "moving time", "avg_cadence" ]`.
+
+![more arcs](assets/canvas.20260220.svg)
+
 ### February 16, 2026: Circles Consisting of Arcs
 
 For every activity, I want to represent one of its recorded statistics as an arc, layering them on multiple adjacent distances, next to each other.
 
 The first set of statistics I compiled was: `[ "distance", "avg_speed", "avg_heart_rate" ]`. The length of each arc represents a percentage with respect to the minimum and maximum values for that statistic.
 
-![spiraling canvas](assets/canvas.20260216.svg)
+![arcs](assets/canvas.20260216.svg)
 
 💡 Can you find my first marathon, knowing that `distance` was blue?
 

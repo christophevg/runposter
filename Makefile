@@ -3,10 +3,12 @@ CANVAS_TODAY=assets/canvas.${TODAY}.svg
 
 all: html/canvas.svg
 
+# today snapshots are rendered square, to minimize whitespace loss in README
+today: HEIGHT=841
 today: ${CANVAS_TODAY}
 
 %.svg:
-	python -m runposter render strava/activities.csv ${YEAR} > $@
+	python -m runposter render strava/activities.csv ${YEAR} ${HEIGHT} > $@
 
 html/canvas.svg: .FORCE
 ${CANVAS_TODAY}: .FORCE

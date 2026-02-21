@@ -10,7 +10,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Circle(Shape):
-  def __init__(self, radius, fill, stroke="red", stroke_width=0):
+  """
+  Test Shape, that simply draws a full circle. Doesn't take into account activities information.
+  """
+  def __init__(self, _, radius, fill, stroke="red", stroke_width=0):
     super().__init__()
     self.radius       = radius
     self.fill         = fill
@@ -26,10 +29,13 @@ class Circle(Shape):
     return draw.Circle(self.left, self.top, self.radius, fill=self.fill)
 
 class Arc(Circle):
-  def __init__(self, radius, start, stop, *args, **kwargs):
+  """
+  A variation of the basic `Circle` shape. This version accepts additional `start` and `stop` angles to construct an arc. Doesn't take into account activities information.
+  """
+  def __init__(self, _, radius, start, stop, *args, **kwargs):
     kwargs["fill"]         = kwargs.get("fill", "none")
     kwargs["stroke_width"] = kwargs.get("stroke_width", 4)
-    super().__init__(radius, *args, **kwargs)
+    super().__init__(None, radius, *args, **kwargs)
     self.start = start
     self.stop  = stop
 
@@ -42,29 +48,36 @@ class Arc(Circle):
     )
 
 class Arcs(Shape):
-  statistics = [ "distance", "avg_speed", "avg_heart_rate" ]
-  strokes = [ "blue", "green", "red" ]
-
-  def __init__(self, radius, stroke_width=4):
+  """
+  Renders statistics using layered arcs.
+  """
+  def __init__(self, statistics, radius, stroke_width=4):
+    super().__init__(statistics)
     self.radius = radius
     self.stroke_width = stroke_width
 
-  @property
-  def rendered(self):
-    g = draw.Group(fill="none")
-    radius = self.radius
-    start = 0
-    for idx, statistic in enumerate(self.statistics):
-      size = 359.99 * self.activity[statistic].pct
-      logger.debug(f"{size} > 350 : {size>350}")
-      arc = Arc(
-        radius, start, size,
-        stroke=self.strokes[idx],
-        stroke_width=self.stroke_width)
-      g.append(arc.at((self.left, self.top)))
-      radius -= self.stroke_width
-      start = 0
-    return g
+  def create_visual(self, statistic, index=0, color="red"):
+    size = 359.99 * self.activity[statistic].pct
+    radius = self.radius - (self.stroke_width * index)
+    return Arc(
+      None, radius, 0, size,
+      stroke=color, stroke_width=self.stroke_width
+    )
+
+class Segments(Shape):
+  def __init__(self, statistics, radius=22.0, stroke_width=4):
+    super().__init__(statistics)
+    self.radius = radius
+    self.stroke_width = stroke_width
+
+  def create_visual(self, statistic, index=0, color="red"):
+    size = self.radius * self.activity[statistic].pct
+    width = 360 / len(self.statistics)
+    start = width * index
+    return Arc(
+      None, size, start, start+width,
+      stroke=color, stroke_width=size
+    )
 
 class Spiral(Layout):
   def __init__(self, circumradius, fa=2.1, fds=4):

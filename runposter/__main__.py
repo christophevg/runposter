@@ -1,18 +1,19 @@
 import os
 
-import pandas as pd
-
 from datetime import datetime
 
 from rich.console   import Console
 from rich.logging   import RichHandler
-from rich.traceback import install
 
-from runposter         import Canvas
-from runposter         import spiraling_circles as design
-from runposter.sources import Strava
+from runposter import Canvas, sources
+from runposter import spiraling_circles as design
 
 import logging
+
+# load the environment variables for this setup
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+load_dotenv(".env.local")
 
 console = Console(stderr=True)
 
@@ -26,30 +27,34 @@ logging.basicConfig(
 
 logger = logging.getLogger("runposter")
 
-# install(show_locals=True)
+statistics = {
+  "distance"      : "blue",
+  "avg_speed"     : "green",
+  "avg_heart_rate": "red",
+  "moving_time"   : "yellow",
+  "avg_cadence"   : "orange"
+}
 
 class RunPoster:
-  def render(self, filename, year=datetime.today().year):
-    logger.info(f"loading from '{filename}'")
+  def __init__(self):
+    self.source = sources.select("Strava")
+    self.layout = design.Spiral(21)
+    self.shape  = design.Segments(statistics, 19.5)
+
+  def from_source(self, name):
+    """
+    Sets up the source that the activities are obtained from. Possible values include "Strava".
+    """
+    self.source = sources.select(name)
+    return self
+
+  def render(self, filename, year=datetime.today().year, height=1189):
     year = int(year)
-    logger.info(f"filtering for '{year}'")
 
-    # read Strava activities.csv from commandline argument
-    df = pd.read_csv(filename)
+    # read activities from source as pandas df
+    df = self.source.load(filename, only_year=year)
 
-    # select runs
-    df = df[df[Strava.props()["type"]] == "Run"]
-
-    when = Strava.props()["when"]
-    # localize datetime
-    df[when] = pd.to_datetime(df[when], utc=True)
-    df[when] = df[when].dt.tz_convert("Europe/Brussels")
-    # filter year
-    df = df[df[when].dt.year == year]
-    # ensure sorted by date
-    df.sort_values(by=when, inplace=True)
-
-    canvas = Canvas(design.Arcs(22), design.Spiral(22), Strava)
+    canvas = Canvas(self.shape, self.layout, self.source, height=height)
     return canvas.render(df)
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 __version__ = "0.0.1"
 
+import os
+
 from dataclasses import dataclass, field
 from typing import Union, Dict
 
@@ -10,6 +12,11 @@ import drawsvg as draw
 import logging
 logger = logging.getLogger()
 
+MAX_HR = os.environ.get("MAX_HR", None)
+if MAX_HR is not None:
+  MAX_HR = int(MAX_HR)
+  logger.info(f"♥️ MAX_HR={MAX_HR}")
+
 class Canvas:
   def __init__(self, shape, layout, source, width=841, height=1189):
     self.shape  = shape
@@ -18,9 +25,9 @@ class Canvas:
     self.width  = width
     self.height = height
     self.canvas = draw.Drawing(self.width, self.height, origin="center")
+    logger.info(f"📋 {self.width}x{self.height}")
 
   def render(self, df):
-
     for activity, pos in zip(df.iterrows(), self.layout):
       _, series = activity
       activity = self.source.create(series, df)
@@ -33,8 +40,9 @@ class Canvas:
     return self.canvas.as_svg()
 
 class Shape:
-  def __init__(self):
-    self.activity = None
+  def __init__(self, statistics=None):
+    self.statistics = statistics or {}
+    self.activity = {}
 
   def render(self, activity):
     self.activity = activity
@@ -51,6 +59,13 @@ class Shape:
 
   @property
   def rendered(self):
+    g = draw.Group(fill="none")
+    for idx, (statistic, color) in enumerate(self.statistics.items()):
+      visual = self.create_visual(statistic, index=idx, color=color)
+      g.append(visual.at((self.left, self.top)))
+    return g
+
+  def create_visual(self, statistic, index=0, color="red"):
     raise NotImplementedError
 
 class Layout:
