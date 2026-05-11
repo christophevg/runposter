@@ -25,7 +25,9 @@ This will produce a poster called `canvas.svg` based on this years activities.
 
 Time flies why you have a lot on your plate 🤷‍♂️ Apparently I was in the middle of a code clean up when I left this project hanging. Today no real progress, except for getting the code back up and running and introducing `uv` - my new Python toy 🤓
 
-The remainder of the poster will be done in Illustrator.
+The remainder of the poster will be done in Illustrator, with the following final result:
+
+![final](assets/runposter.png)
 
 ### February 21, 2026: More Arcs
 
