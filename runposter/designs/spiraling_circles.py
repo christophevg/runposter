@@ -4,10 +4,8 @@ import math
 
 import drawsvg as draw
 
-from runposter import Shape, Layout
+from runposter import Layout, Shape
 
-import logging
-logger = logging.getLogger(__name__)
 
 class Circle(Shape):
   """
@@ -28,11 +26,11 @@ class Circle(Shape):
   def rendered(self):
     return draw.Circle(self.left, self.top, self.radius, fill=self.fill)
 
-class Arc(Circle):
+class _Arc(Circle):
   """
-  A variation of the basic `Circle` shape. This version accepts additional `start` and `stop` angles to construct an arc. Doesn't take into account activities information.
+  A variation of the basic `Circle` shape. This version accepts additional `start` and `stop` angles to construct an arc. Doesn't take into account activities information. Not to be used as an actual Shape. Used by `Arcs`.
   """
-  def __init__(self, _, radius, start, stop, *args, **kwargs):
+  def __init__(self, radius, start, stop, *args, **kwargs):
     kwargs["fill"]         = kwargs.get("fill", "none")
     kwargs["stroke_width"] = kwargs.get("stroke_width", 4)
     super().__init__(None, radius, *args, **kwargs)
@@ -51,22 +49,22 @@ class Arcs(Shape):
   """
   Renders statistics using layered arcs.
   """
-  def __init__(self, statistics, radius, stroke_width=4):
-    super().__init__(statistics)
+  def __init__(self, radius, stroke_width=4):
+    super().__init__()
     self.radius = radius
     self.stroke_width = stroke_width
 
   def create_visual(self, statistic, index=0, color="red"):
     size = 359.99 * self.activity[statistic].pct
     radius = self.radius - (self.stroke_width * index)
-    return Arc(
-      None, radius, 0, size,
+    return _Arc(
+      radius, 0, size,
       stroke=color, stroke_width=self.stroke_width
     )
 
 class Segments(Shape):
-  def __init__(self, statistics, radius=22.0, stroke_width=4):
-    super().__init__(statistics)
+  def __init__(self, radius=22.0, stroke_width=4):
+    super().__init__()
     self.radius = radius
     self.stroke_width = stroke_width
 
@@ -74,8 +72,8 @@ class Segments(Shape):
     size = self.radius * self.activity[statistic].pct
     width = 360 / len(self.statistics)
     start = width * index
-    return Arc(
-      None, size, start, start+width,
+    return _Arc(
+      size, start, start+width,
       stroke=color, stroke_width=size
     )
 
@@ -87,10 +85,14 @@ class Spiral(Layout):
     self.theta  = 0
 
   def __iter__(self):
+    """
+    yields the angle and consecutive points along an archimedes spiral, evenly separated by a constant given distance. along with it
+    """
     while True:
       yield (
-        self.a * self.theta * math.cos(self.theta),
-        self.a * self.theta * math.sin(self.theta)
+        int(self.a * self.theta * math.cos(self.theta)),
+        int(self.a * self.theta * math.sin(self.theta)),
+        self.theta
       )
       # prepare next
       # credits: https://math.stackexchange.com/a/2216736

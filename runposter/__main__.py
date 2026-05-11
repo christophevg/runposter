@@ -1,19 +1,15 @@
-import os
-
-from datetime import datetime
-
-from rich.console   import Console
-from rich.logging   import RichHandler
-
-from runposter import Canvas, sources
-from runposter import spiraling_circles as design
-
 import logging
+import os
+from datetime import datetime
+from pathlib import Path
 
-# load the environment variables for this setup
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
-load_dotenv(".env.local")
+from dotenv import load_dotenv
+from rich.console import Console
+from rich.logging import RichHandler
+
+_ = load_dotenv(Path().resolve() / ".env.local")
+
+from runposter import Canvas, designs, sources # noqa
 
 console = Console(stderr=True)
 
@@ -27,19 +23,42 @@ logging.basicConfig(
 
 logger = logging.getLogger("runposter")
 
+# configuration for shapes that render multiple statistics
 statistics = {
-  "distance"      : "blue",
-  "avg_speed"     : "green",
-  "avg_heart_rate": "red",
-  "moving_time"   : "yellow",
-  "avg_cadence"   : "orange"
+  "segments" : {
+    "distance"      : "blue",
+    "avg_speed"     : "green",
+    "avg_heart_rate": "red",
+    "moving_time"   : "yellow",
+    "avg_cadence"   : "orange"
+  }
 }
 
 class RunPoster:
   def __init__(self):
-    self.source = sources.select("Strava")
-    self.layout = design.Spiral(21)
-    self.shape  = design.Segments(statistics, 19.5)
+    # setup with some defaults
+    self.using_layout("spiral", 21)
+    self.using_shape("segments", 19.5)
+    self.from_source("Strava")
+
+  def using_layout(self, name, arg):
+    """
+    Sets up the layout that will be used. The name determines the layout and a single argument is provided to the layout's constructor.
+    """
+    self.layout = designs.select_layout(name, arg)
+    return self
+
+  def using_shape(self, name, arg):
+    """
+    Sets up the shape that will be used. The name determines the shape and a single argument is provided to the shape's constructor.
+    If the name of the shape has a statistics configuration, it is added.
+    """
+    self.shape = designs.select_shape(name)
+    try:
+      self.shape.statistics = statistics[name]
+    except KeyError:
+      pass
+    return self
 
   def from_source(self, name):
     """
@@ -48,11 +67,18 @@ class RunPoster:
     self.source = sources.select(name)
     return self
 
-  def render(self, filename, year=datetime.today().year, height=1189):
+  def render(self, filename, year=None, height=1189):
+    """
+    Render all activities in the given source, for the given year.
+    """
+    if not year:
+      year = datetime.today().year
     year = int(year)
 
     # read activities from source as pandas df
     df = self.source.load(filename, only_year=year)
+
+    logger.debug(f"loaded\n{df}")
 
     canvas = Canvas(self.shape, self.layout, self.source, height=height)
     return canvas.render(df)

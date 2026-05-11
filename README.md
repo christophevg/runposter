@@ -8,16 +8,24 @@ This repository and README document my journey throughout the year, beginning wi
 
 ## Minimal Survival Commands
 
-Want to run this yourself on your own Strava data? First [download your personal Strava data](https://support.strava.com/hc/en-us/articles/216918437-Exporting-your-Data-and-Bulk-Export) and unpack it in a checkout of this repository in a folder called `strava`. Next:
+Want to run this yourself on your own Strava data? First [download your personal Strava data](https://support.strava.com/hc/en-us/articles/216918437-Exporting-your-Data-and-Bulk-Export) and unpack it in a checkout of this repository in a folder called `strava`. 
+
+> I recently "finally" discovered `uv`, and you should too 😇
 
 ```console
-% pip install requirements.txt
-% python -m runposter render strava/activities.csv > canvas.svg
+% uv sync
+% uv run python -m runposter render strava/activities.csv > canvas.svg
 ```
 
 This will produce a poster called `canvas.svg` based on this years activities.
 
 ## My Journal
+
+### May 11, 2026: Code Clean Up Before Finalizing
+
+Time flies why you have a lot on your plate 🤷‍♂️ Apparently I was in the middle of a code clean up when I left this project hanging. Today no real progress, except for getting the code back up and running and introducing `uv` - my new Python toy 🤓
+
+The remainder of the poster will be done in Illustrator.
 
 ### February 21, 2026: More Arcs
 

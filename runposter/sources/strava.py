@@ -1,12 +1,17 @@
 # for now only Strava, yet let's be open to others ;-)
 
+import logging
+import os
+
 import pandas as pd
 
-import logging
-
-from runposter import ActivityFactory, Mapping, MAX_HR
+from runposter import ActivityFactory, Mapping
 
 logger = logging.getLogger(__name__)
+
+MAX_HR = int(os.environ.get("MAX_HR", 0))
+if MAX_HR:
+  logger.info(f"♥️ MAX_HR={MAX_HR}")
 
 class Strava(ActivityFactory):
   """
